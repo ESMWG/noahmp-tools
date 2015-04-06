@@ -3,6 +3,8 @@
 
 # create Noah-MP case
 
+# author: Hui ZHENG
+
 import sys
 import os
 import os.path
@@ -10,9 +12,7 @@ import datetime
 import string
 import shutil
 
-namelist = """
-
-"""
+NOAHMP_NML = 'namelist.hrldas.template'
 NOAHMP_TBLS = ['GENPARM.TBL', 'MPTABLE.TBL', 'SOILPARM.TBL', 'VEGPARM.TBL']
 NOAHMP_EXE = 'noahmp_hrldas.exe'
 
@@ -36,7 +36,7 @@ def main(modelroot=None,
     os.makedirs(forcing, exist_ok=True)
 
     if namelist_template is None:
-        namelist_template = os.path.join(modelroot, 'namelist.hrldas.template')
+        namelist_template = os.path.join(modelroot, NOAHMP_NML)
     if not os.path.isfile(namelist_template):
         print('file (' + namelist_template + ') does not exist!')
         return
