@@ -5,7 +5,6 @@
 # author: Hui ZHENG
 
 import sys
-import os
 import os.path
 import glob
 import subprocess
@@ -18,8 +17,8 @@ NOAHMP_EXE = 'noahmp_hrldas.exe'
 NAMELIST = 'namelist.hrldas'
 
 def run(dirname):
-    exefile = os.path.join(dirname, NOAHMP_EXE)
     curdir = os.getcwd()
+    exefile = os.path.join(dirname, NOAHMP_EXE)
     os.chdir(dirname)
     subprocess.check_call([exefile,], stdout=sys.stdout, stderr=sys.stderr,
                           universal_newlines=True)
@@ -28,8 +27,9 @@ def run(dirname):
 
 def run_resume_skip(dirname):
     '''run, resume, or skip'''
+    curdir = os.getcwd()
+    os.chdir(dirname)
     resume = False
-    exefile = os.path.join(dirname, NOAHMP_EXE)
     namelist = os.path.join(dirname, NAMELIST)
     nml = f90nml.read(namelist)
     dt_end = datetime.datetime(nml['noahlsm_offline']['start_year'],
@@ -38,8 +38,7 @@ def run_resume_skip(dirname):
                                nml['noahlsm_offline']['start_hour'],
                                nml['noahlsm_offline']['start_min']) \
         + datetime.timedelta(days=nml['noahlsm_offline']['kday'])
-    curdir = os.getcwd()
-    os.chdir(dirname)
+
     # 1. determing skip, resume, or run
     resfiles = sorted(glob.glob(os.path.join(dirname, 'RESTART.*_DOMAIN[0-9]')))
     resfile_nml = nml['noahlsm_offline'].get('restart_filename_requested')
@@ -61,8 +60,7 @@ def run_resume_skip(dirname):
     # resume or run
     if not resume:
         # 1. fresh case
-        subprocess.check_call([exefile,], stdout=sys.stdout, stderr=sys.stderr,
-                              universal_newlines=True)
+        run(dirname)
     else:
         # 2. resume and run
         # prepare namelist
@@ -81,8 +79,7 @@ def run_resume_skip(dirname):
         nml['noahlsm_offline']['kday'] = kday
         nml.write(namelist)
         # run
-        subprocess.check_call([exefile,], stdout=sys.stdout, stderr=sys.stderr,
-                              universal_newlines=True)
+        run(dirname)
         # finish
         os.remove(namelist)
         os.rename(namelist_bak, namelist)
