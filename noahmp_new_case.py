@@ -125,7 +125,7 @@ def main(modelroot=None,
 import argparse
 import dateutil.parser
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Download NARR 3-hourly product from NOMADS.')
+    parser = argparse.ArgumentParser(description='Create Noah-MP case.')
     parser.add_argument('caseroot', type=str,
                         default=os.getcwd(), help='case root directory')
     parser.add_argument('-m', '--modelroot', type=str,
