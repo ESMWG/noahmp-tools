@@ -5,10 +5,7 @@
 
 # author: Hui ZHENG
 
-import sys
-import os
 import os.path
-import datetime
 import string
 import shutil
 
