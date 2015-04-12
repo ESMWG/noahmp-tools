@@ -16,8 +16,7 @@ NOAHMP_EXE = 'noahmp_hrldas.exe'
 def main(modelroot=None,
          caseroot='unknown_case',
          dtbeg_s=None, dtbeg=None, dtend=None, nloop=0,
-         namelist_template=None, forcing=None, wrfinput=None,
-         delete=False):
+         namelist_template=None, forcing=None, wrfinput=None):
     if (modelroot is None) or (dtbeg is None) or (dtend is None):
         return
     caseroot = os.path.abspath(caseroot)
@@ -89,7 +88,7 @@ def main(modelroot=None,
             os.makedirs(fold, exist_ok=True)
             for f in NOAHMP_TBLS + [NOAHMP_EXE]:
                 fabs = os.path.join(fold, f)
-                if os.path.isfile(fabs) : os.remove(fabs)
+                if os.path.isfile(fabs): os.remove(fabs)
                 os.symlink(os.path.join(caseroot, f), fabs)
             if iloop == 0:
                 nml = namelist.safe_substitute(START_YEAR=dtbeg_s.year,
@@ -117,7 +116,7 @@ def main(modelroot=None,
                                                RESFILE=resfile)
             with open(os.path.join(fold, 'namelist.hrldas'), 'wt') as f:
                 f.write(nml)
-    pass
+    return
 
 import argparse
 import dateutil.parser
@@ -126,8 +125,7 @@ if __name__ == '__main__':
     parser.add_argument('caseroot', type=str,
                         default=os.getcwd(), help='case root directory')
     parser.add_argument('-m', '--modelroot', type=str,
-                        default=os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                                             'noahmp'),
+                        default=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'noahmp'),
                         help='Noah-MP root root directory')
     parser.add_argument('-n', '--namelist', type=str,
                         help='noahmp namelist template location. (default: MODELROOT/namelist.template)')
@@ -144,8 +142,6 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--nloop',
                         help='number of spinup loops (default: 0 or 1 for no spinup)',
                         default=1, type=int)
-    parser.add_argument('-d', '--delete',
-                        help='delete old case', default=False, action='store_true')
     args = parser.parse_args()
 
     main(modelroot=args.modelroot,
@@ -156,5 +152,5 @@ if __name__ == '__main__':
          nloop=args.nloop,
          namelist_template=args.namelist,
          forcing=args.forcing,
-         wrfinput=args.wrfinput,
-         delete=args.delete)
+         wrfinput=args.wrfinput)
+
