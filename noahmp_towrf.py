@@ -46,7 +46,7 @@ nmp2wrf_2d = {'QSNOW':'QSNOWXY',
               'EQZWT':'EQZWT',
               'RIVERCONDXY':'RIVERCOND',
               'PEXPXY':'PEXP'}
-FILL_VALUE = -1.0e33
+ABSMAX = 1.0e20
 
 def main(nmpfile, wrffile):
     with nc.Dataset(nmpfile, 'r') as fi, \
@@ -55,7 +55,7 @@ def main(nmpfile, wrffile):
             print(varnamei, varnameo)
             vi = fi.variables[varnamei][:]
             vo = fo.variables[varnameo][:]
-            mask = vi <= FILL_VALUE
+            mask = np.abs(vi) <= ABSMAX
             v = np.where(mask, vo, vi)
             fo.variables[varnameo][:] = v[:]
         for varnamei, varnameo in nmp2wrf_3d.items():
@@ -63,7 +63,7 @@ def main(nmpfile, wrffile):
             vi = fi.variables[varnamei][:]
             vi = np.swapaxes(vi, 1, 2)
             vo = fo.variables[varnameo][:]
-            mask = vi <= FILL_VALUE
+            mask = np.abs(vi) >= ABSMAX
             v = np.where(mask, vo, vi)
             fo.variables[varnameo][:] = v[:]
         fo.variables['FNDSNOWH'][:] = 1
