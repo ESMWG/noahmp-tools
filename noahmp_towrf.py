@@ -55,7 +55,7 @@ def main(nmpfile, wrffile):
             print(varnamei, varnameo)
             vi = fi.variables[varnamei][:]
             vo = fo.variables[varnameo][:]
-            mask = np.abs(vi) <= ABSMAX
+            mask = np.abs(vi) >= ABSMAX
             v = np.where(mask, vo, vi)
             fo.variables[varnameo][:] = v[:]
         for varnamei, varnameo in nmp2wrf_3d.items():
