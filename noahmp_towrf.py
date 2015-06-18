@@ -55,7 +55,8 @@ def main(nmpfile, wrffile):
             print(varnamei, varnameo)
             vi = fi.variables[varnamei][:]
             vo = fo.variables[varnameo][:]
-            mask = np.abs(vi) >= ABSMAX
+            with np.errstate(invalid='ignore'):
+                mask = np.logical_or(abs(vi) >= ABSMAX, np.isnan(vi))
             v = np.where(mask, vo, vi)
             fo.variables[varnameo][:] = v[:]
         for varnamei, varnameo in nmp2wrf_3d.items():
@@ -63,7 +64,8 @@ def main(nmpfile, wrffile):
             vi = fi.variables[varnamei][:]
             vi = np.swapaxes(vi, 1, 2)
             vo = fo.variables[varnameo][:]
-            mask = np.abs(vi) >= ABSMAX
+            with np.errstate(invalid='ignore'):
+                mask = np.logical_or(abs(vi) >= ABSMAX, np.isnan(vi))
             v = np.where(mask, vo, vi)
             fo.variables[varnameo][:] = v[:]
         fo.variables['FNDSNOWH'][:] = 1
