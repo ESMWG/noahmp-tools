@@ -32,7 +32,7 @@ def run_resume_skip(dirname):
     resume = False
     namelist = os.path.join(dirname, NAMELIST)
     namelist_bak = namelist + '-orig-before-resume'
-    if not os.path.isfile(namelist_bak):
+    if os.path.isfile(namelist_bak):
         os.remove(namelist)
         os.rename(namelist_bak, namelist)
     nml = f90nml.read(namelist)
