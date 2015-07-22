@@ -31,6 +31,10 @@ def run_resume_skip(dirname):
     os.chdir(dirname)
     resume = False
     namelist = os.path.join(dirname, NAMELIST)
+    namelist_bak = namelist + '-orig-before-resume'
+    if not os.path.isfile(namelist_bak):
+        os.remove(namelist)
+        os.rename(namelist_bak, namelist)
     nml = f90nml.read(namelist)
     dt_end = datetime.datetime(nml['noahlsm_offline']['start_year'],
                                nml['noahlsm_offline']['start_month'],
@@ -64,9 +68,7 @@ def run_resume_skip(dirname):
     else:
         # 2. resume and run
         # prepare namelist
-        namelist_bak = namelist + '-orig-before-resume'
-        if not os.path.isfile(namelist_bak):
-            os.rename(namelist, namelist_bak)
+        os.rename(namelist, namelist_bak)
         resfile = os.path.abspath(resfiles[max(len(resfiles) - 2, 0)])
         dt_res = datetime.datetime.strptime(os.path.basename(resfile)[8:18], '%Y%m%d%H')
         kday = (dt_end - dt_res).days
