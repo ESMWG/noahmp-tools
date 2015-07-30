@@ -72,22 +72,21 @@ def main(files=None, prefix='FILE', append=False):
     if files is None:
         return
 
-    # possible output files
-    dates = []
+    # possible outputs
+    dates = set()
     for flnm in files:
         if not os.path.isfile(flnm):
             print('Error: no such file ', flnm)
             return
         with nc.Dataset(flnm, 'r') as f:
-            dates.extend(nc.num2date(f.variables['time'][:],
+            dates.update(nc.num2date(f.variables['time'][:],
                                      f.variables['time'].units))
-        pass
-
     # delete exsiting intermediate files
     for dd in dates:
         oflnm = ''.join([prefix, ':', dd.strftime('%Y-%m-%d_%H')])
         if not append and os.path.isfile(oflnm):
             os.remove(oflnm)
+    del dates
 
     # process & write output
     for flnm in files:
