@@ -67,7 +67,7 @@ def wps_write_latlon_field(f,
     return
 
 def main(files=None, prefix='FILE', append=False):
-    VARS = set(['dlwrf','dswlf','prcp'])
+    VARS = set(['dswrf', 'dlwrf', 'wind', 'tas', 'shum', 'pres', 'prcp'])
 
     if files is None:
         return
