@@ -11,6 +11,7 @@ import os
 import os.path
 import struct
 import argparse
+import dateutil.parser
 import numpy as np
 import netCDF4 as nc
 
@@ -66,7 +67,7 @@ def wps_write_latlon_field(f,
 
     return
 
-def main(files=None, prefix='FILE', append=False):
+def main(files=None, prefix='FILE', append=False, begtime=None, endtime=None):
     VARS = set(['dswrf', 'dlwrf', 'wind', 'tas', 'shum', 'pres', 'prcp'])
 
     if files is None:
@@ -83,6 +84,9 @@ def main(files=None, prefix='FILE', append=False):
                                      f.variables['time'].units))
     # delete exsiting intermediate files
     for dd in dates:
+        if ((begtime is not None and dd < begtime)
+            or (endtime is not None and dd >= endtime)):
+            continue
         oflnm = ''.join([prefix, ':', dd.strftime('%Y-%m-%d_%H')])
         if not append and os.path.isfile(oflnm):
             os.remove(oflnm)
@@ -96,6 +100,9 @@ def main(files=None, prefix='FILE', append=False):
             varname = VARS.intersection(set(f.variables.keys())).pop()
             var = f.variables[varname]
             for ii, dd in enumerate(dates):
+                if ((begtime is not None and dd < begtime)
+                    or (endtime is not None and dd >= endtime)):
+                    continue
                 oflnm = ''.join([prefix, ':', dd.strftime('%Y-%m-%d_%H')])
                 omod = 'ab' if os.path.isfile(oflnm) else 'wb'
                 print(oflnm)
@@ -140,6 +147,16 @@ if __name__ == '__main__':
     parser.add_argument('-a', '--append',
                         help='append data to existing files (other than create new files).',
                         default=False, action='store_true')
+    parser.add_argument('-b', '--begtime',
+                        help='begin date & time',
+                        default=None, type=str)
+    parser.add_argument('-e', '--endtime',
+                        help='end date & time (exclusive)',
+                        default=None, type=str)
     args = parser.parse_args()
 
-    main(files=args.file, prefix=args.prefix, append=args.append)
+    main(files=args.file,
+         prefix=args.prefix,
+         append=args.append,
+         begtime=dateutil.parser.parse(args.begtime) if args.begtime is not None else None,
+         endtime=dateutil.parser.parse(args.endtime) if args.endtime is not None else None)
