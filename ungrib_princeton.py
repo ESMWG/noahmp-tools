@@ -18,11 +18,16 @@ import netCDF4 as nc
 def wps_write_latlon_field(f,
                            hdate, xfcst, map_src,
                            field, units, desc,
-                           xlvl, nx, ny,
+                           xlvl, nlat, nlon,
                            startloc,
                            startlat, startlon,
                            deltalat, deltalon,
                            is_wind_grid_rel, data):
+    """
+    Note: For WPS intermediate file,
+          x-dimension is the longitude, y-dimension is the latitude,
+          data in the dimension of (nlat, nlon) (C-order)
+    """
     version = 5
     iproj = 0
     earth_radius = 6371.229004
@@ -41,8 +46,8 @@ def wps_write_latlon_field(f,
     f.write(struct.pack('>25s', units.ljust(25, ' ').encode('ascii')))
     f.write(struct.pack('>46s', desc.ljust(46, ' ').encode('ascii')))
     f.write(struct.pack('>f', xlvl))
-    f.write(struct.pack('>i', nx))
-    f.write(struct.pack('>i', ny))
+    f.write(struct.pack('>i', nlon))
+    f.write(struct.pack('>i', nlat))
     f.write(struct.pack('>i', iproj))
     f.write(struct.pack('>I', recsize))
 
@@ -62,7 +67,7 @@ def wps_write_latlon_field(f,
     bdata = np.array(data, data.dtype.newbyteorder('>'))
     recsize = bdata.nbytes
     f.write(struct.pack('>I', recsize))
-    f.write(bdata.tobytes('F'))
+    f.write(bdata.tobytes('C'))
     f.write(struct.pack('>I', recsize))
 
     return
@@ -112,8 +117,8 @@ def main(files=None, prefix='FILE', append=False, begtime=None, endtime=None):
                     field = varname.upper()
                     units = var.units
                     desc = var.title
-                    nx = len(f.dimensions['latitude'])
-                    ny = len(f.dimensions['longitude'])
+                    nlat = len(f.dimensions['latitude'])
+                    nlon = len(f.dimensions['longitude'])
                     startloc = 'SWCORNER'
                     startlat = f.variables['latitude'][0]
                     startlon = f.variables['longitude'][0]
@@ -126,7 +131,7 @@ def main(files=None, prefix='FILE', append=False, begtime=None, endtime=None):
                         wps_write_latlon_field(of,
                                                dd, xfcst, map_src,
                                                field, units, desc,
-                                               xlvl, nx, ny,
+                                               xlvl, nlat, nlon,
                                                startloc,
                                                startlat, startlon,
                                                deltalat, deltalon,
