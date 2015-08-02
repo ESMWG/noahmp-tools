@@ -34,12 +34,12 @@ def wps_write_latlon_field(f,
 
     recsize = struct.calcsize('>24s f 32s 9s 25s 46s f i i i')
     f.write(struct.pack('>I', recsize))
-    f.write(struct.pack('>24s', hdate.encode('ascii')))
+    f.write(struct.pack('>24s', hdate.strftime('%Y:%m:%d_%H:%M:%S').encode('ascii')))
     f.write(struct.pack('>f', xfcst))
-    f.write(struct.pack('>32s', map_src.encode('ascii')))
-    f.write(struct.pack('>9s', field.encode('ascii')))
-    f.write(struct.pack('>25s', units.encode('ascii')))
-    f.write(struct.pack('>46s', desc.encode('ascii')))
+    f.write(struct.pack('>32s', map_src.ljust(32, ' ').encode('ascii')))
+    f.write(struct.pack('>9s', field.ljust(9, ' ').encode('ascii')))
+    f.write(struct.pack('>25s', units.ljust(25, ' ').encode('ascii')))
+    f.write(struct.pack('>46s', desc.ljust(46, ' ').encode('ascii')))
     f.write(struct.pack('>f', xlvl))
     f.write(struct.pack('>i', nx))
     f.write(struct.pack('>i', ny))
@@ -48,7 +48,7 @@ def wps_write_latlon_field(f,
 
     recsize = struct.calcsize('>8s f f f f f')
     f.write(struct.pack('>I', recsize))
-    f.write(struct.pack('>8s', startloc.encode('ascii')))
+    f.write(struct.pack('>8s', startloc.ljust(8, ' ').encode('ascii')))
     f.write(struct.pack('>ff', startlat, startlon))
     f.write(struct.pack('>ff', deltalat, deltalon))
     f.write(struct.pack('>f', earth_radius))
@@ -107,7 +107,6 @@ def main(files=None, prefix='FILE', append=False, begtime=None, endtime=None):
                 omod = 'ab' if os.path.isfile(oflnm) else 'wb'
                 print(oflnm)
                 with open(oflnm, omod) as of:
-                    hdate = dd.strftime('%Y:%m:%d_%H:%M:%S')
                     xfcst = 0.0
                     map_src = var.source
                     field = varname.upper()
@@ -125,7 +124,7 @@ def main(files=None, prefix='FILE', append=False, begtime=None, endtime=None):
                         xlvl = f.variables['z'][iz]
                         data = var[ii,iz]
                         wps_write_latlon_field(of,
-                                               hdate, xfcst, map_src,
+                                               dd, xfcst, map_src,
                                                field, units, desc,
                                                xlvl, nx, ny,
                                                startloc,
