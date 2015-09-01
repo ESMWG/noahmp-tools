@@ -59,9 +59,11 @@ def main(fin, fout):
          nc.Dataset(fout, 'w', format='NETCDF4_CLASSIC') as fo:
         for dim in ('Time', 'south_north', 'west_east'):
             copy_dim_def(fo, fi, dim)
-        for var in ('HGT', 'ISLTYP', 'IVGTYP', 'TMN', 'XLAT', 'XLONG'):
+        for var in ('HGT', 'ISLTYP', 'IVGTYP', 'TMN', 'XLAT', 'XLONG',
+                    'XLAND', 'MAPFAC_MX', 'MAPFAC_MY'):
             copy_var_def(fo, fi, var)
-        for var in ('HGT', 'ISLTYP', 'IVGTYP', 'TMN', 'XLAT', 'XLONG'):
+        for var in ('HGT', 'ISLTYP', 'IVGTYP', 'TMN', 'XLAT', 'XLONG',
+                    'XLAND', 'MAPFAC_MX', 'MAPFAC_MY'):
             copy_var_val(fo, fi, var)
         for att in ('DX', 'DY', 'GRID_ID',
                     'TRUELAT1', 'TRUELAT2', 'STAND_LON', 'MAP_PROJ',
