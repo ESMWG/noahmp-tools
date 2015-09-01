@@ -65,7 +65,8 @@ def main(fin, fout):
             copy_var_val(fo, fi, var)
         for att in ('DX', 'DY', 'GRID_ID',
                     'TRUELAT1', 'TRUELAT2', 'STAND_LON', 'MAP_PROJ',
-                    'MMINLU', 'ISWATER', 'ISURBAN'):
+                    'MMINLU',
+                    'ISWATER', 'ISURBAN', 'ISICE', 'ISOILWATER'):
             setattr(fo, att, getattr(fi, att))
     return
 
