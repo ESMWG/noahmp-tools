@@ -69,7 +69,7 @@ def run_resume_skip(dirname):
         # 2. resume and run
         # prepare namelist
         os.rename(namelist, namelist_bak)
-        resfile = os.path.abspath(resfiles[max(len(resfiles) - 2, 0)])
+        resfile = os.path.abspath(resfiles[max(len(resfiles) - 1, 0)])
         dt_res = datetime.datetime.strptime(os.path.basename(resfile)[8:18], '%Y%m%d%H')
         kday = (dt_end - dt_res).days
         nml['noahlsm_offline']['start_year'] = dt_res.year
