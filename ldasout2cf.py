@@ -35,17 +35,22 @@ def main(files):
                 deletetim = True
         with tempfile.NamedTemporaryFile(suffix='.nc') as tmp:
             subprocess.run(
-                ['ncpdq', '-Oh', '-a', 'time,snow_layers,soil_layers_stag,lat,lon', f, tmp.name])
+                ['ncpdq', '-Oh', '--fl_fmt=netcdf4_classic', '-L', '6',
+                 '-a', 'time,snow_layers,soil_layers_stag,lat,lon', f, tmp.name])
             shutil.copyfile(tmp.name, f)
         if renamelon:
-            subprocess.run(['ncrename', '-Oh', '-d', 'west_east,lon', f])
+            subprocess.run(['ncrename', '-Oh', '--fl_fmt=netcdf4_classic', '-L', '6',
+                            '-d', 'west_east,lon', f])
         if renamelat:
-            subprocess.run(['ncrename', '-Oh', '-d', 'south_north,lat', f])
+            subprocess.run(['ncrename', '-Oh', '--fl_fmt=netcdf4_classic', '-L', '6',
+                            '-d', 'south_north,lat', f])
         if renametim:
-            subprocess.run(['ncrename', '-Oh', '-d', 'Time,time', f])
+            subprocess.run(['ncrename', '-Oh', '--fl_fmt=netcdf4_classic', '-L', '6',
+                            '-d', 'Time,time', f])
         if deletetim:
             with tempfile.NamedTemporaryFile(suffix='.nc') as tmp:
-                subprocess.run(['ncks', '-Oh', '-x', '-v', 'Times', f, tmp.name])
+                subprocess.run(['ncks', '-Oh', '--fl_fmt=netcdf4_classic', '-L', '6',
+                                '-x', '-v', 'Times', f, tmp.name])
             shutil.copyfile(tmp.name, f)
         dt = datetime.datetime.strptime(os.path.basename(f).split('.')[0], '%Y%m%d%H')
         with nc.Dataset(f, 'r+') as ncf:
