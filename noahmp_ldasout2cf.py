@@ -222,7 +222,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='convert NoahMP outputs to single CF-compatible file')
     parser.add_argument('wrfinput')
     parser.add_argument('datadir', help='root directory of raw NoahMP outputs')
-    parser.add_argument('outfile', help='CF-compaible output file')
+    parser.add_argument('outfile', help='CF-compatible output file')
     parser.add_argument('begtime', help='inclusive')
     parser.add_argument('endtime', help='exclusive')
     parser.add_argument('--partially', action='store_true')
