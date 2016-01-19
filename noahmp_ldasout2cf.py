@@ -176,11 +176,8 @@ def acc2flx(fic, fip, fo, var, ind, ts):
     fo.variables[var][ind,...] = (vc - vp) / ts
     return
 
-def main(wrfinput, datadir, outfile, begtime, endtime, partially=False, delete_source=False, skip_ifexist=None):
+def main(wrfinput, datadir, outfile, begtime, endtime, partially=False):
     files, timestep, integrity = source_info(datadir, begtime, endtime)
-    if (not integrity) and os.path.isfile(skip_ifexist):
-        print('find file : ' + skip_ifexist + ' (do nothing)')
-        sys.exit(0)
     if (not integrity) and (not partially):
         print('not enough files (try --partially)')
         sys.exit(1)
@@ -212,26 +209,18 @@ def main(wrfinput, datadir, outfile, begtime, endtime, partially=False, delete_s
         else:
             for var in ACCVARS:
                 fo.variables[var][0,...] = fo.variables[var][1,...]
-    if delete_source:
-        # delete all but the last one (used for ACCVARS)
-        for f in files[:-1]:
-            os.remove(f)
     return
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='convert NoahMP outputs to single CF-compatible file')
     parser.add_argument('wrfinput')
     parser.add_argument('datadir', help='root directory of raw NoahMP outputs')
-    parser.add_argument('outfile', help='CF-compatible output file')
+    parser.add_argument('outfile', help='CF-compaible output file')
     parser.add_argument('begtime', help='inclusive')
     parser.add_argument('endtime', help='exclusive')
     parser.add_argument('--partially', action='store_true')
-    parser.add_argument('--delete_source', action='store_true')
-    parser.add_argument('--skip_ifexist', type=str)
     args = parser.parse_args()
     main(args.wrfinput, args.datadir, args.outfile,
          dateutil.parser.parse(args.begtime),
          dateutil.parser.parse(args.endtime),
-         args.partially,
-         args.delete_source,
-         args.skip_ifexist)
+         args.partially)
