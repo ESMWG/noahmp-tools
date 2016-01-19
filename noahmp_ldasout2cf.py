@@ -33,23 +33,17 @@ def source_info(datadir, begtime, endtime):
     allfiles = sorted(glob.glob(os.path.join(datadir, '*.LDASOUT_DOMAIN1')))
     files = [x for x in allfiles
              if datetime4name(x) >= begtime and datetime4name(x) < endtime]
-    if len(files) <= 1:
-        print('not enough files (0 or 1)')
-        print('stop.')
-        sys.exit(1)
-    timesteps = set()
-    for ifile in range(1,len(files)):
-        timesteps.add((datetime4name(files[ifile]) - datetime4name(files[ifile-1])).total_seconds())
-    if len(timesteps) != 1:
-        integrity = False
+    timestep = 0
+    integrity = False
+    if len(files) > 1:
+        timesteps = set()
+        for ifile in range(1,len(files)):
+            timesteps.add((datetime4name(files[ifile]) - datetime4name(files[ifile-1])).total_seconds())
         timestep = timesteps.pop()
-    else:
-        timestep = timesteps.pop()
-        if ((datetime4name(files[0]) - begtime).total_seconds() < timestep) \
+        if len(timesteps) == 0 \
+           and ((datetime4name(files[0]) - begtime).total_seconds() < timestep) \
            and ((endtime - datetime4name(files[-1])).total_seconds() <= timestep):
             integrity = True
-        else:
-            integrity = False
     return files, timestep, integrity
 
 def define_output(wrfinput, fi, fo):
@@ -182,9 +176,12 @@ def acc2flx(fic, fip, fo, var, ind, ts):
     fo.variables[var][ind,...] = (vc - vp) / ts
     return
 
-def main(wrfinput, datadir, outfile, begtime, endtime, partially=False, delete_source=False):
+def main(wrfinput, datadir, outfile, begtime, endtime, partially=False, delete_source=False, skip_ifexist=None):
     files, timestep, integrity = source_info(datadir, begtime, endtime)
-    if (not partially) and (not integrity):
+    if (not integrity) and os.path.isfile(skip_ifexist):
+        print('find file : ' + skip_ifexist + ' (do nothing)')
+        sys.exit(0)
+    if (not integrity) and (not partially):
         print('not enough files (try --partially)')
         sys.exit(1)
     with nc.Dataset(outfile, 'w') as fo:
@@ -224,15 +221,17 @@ def main(wrfinput, datadir, outfile, begtime, endtime, partially=False, delete_s
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='convert NoahMP outputs to single CF-compatible file')
     parser.add_argument('wrfinput')
-    parser.add_argument('datadir')
-    parser.add_argument('outfile')
-    parser.add_argument('begtime')
+    parser.add_argument('datadir', help='root directory of raw NoahMP outputs')
+    parser.add_argument('outfile', help='CF-compaible output file')
+    parser.add_argument('begtime', help='inclusive')
     parser.add_argument('endtime', help='exclusive')
     parser.add_argument('--partially', action='store_true')
     parser.add_argument('--delete_source', action='store_true')
+    parser.add_argument('--skip_ifexist', type=str)
     args = parser.parse_args()
     main(args.wrfinput, args.datadir, args.outfile,
          dateutil.parser.parse(args.begtime),
          dateutil.parser.parse(args.endtime),
          args.partially,
-         args.delete_source)
+         args.delete_source,
+         args.skip_ifexist)
