@@ -88,7 +88,7 @@ def main ():
         cptfile = sys.stdout
         cptname = os.path.basename(rgbfilename)
     else:
-        if arg.cptfilename.endswith('.cpt'):
+        if options.cptfilename.endswith('.cpt'):
             outfilename = options.cptfilename
             cptname = os.path.basename(cptfilename)
         else:
