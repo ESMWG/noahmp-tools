@@ -84,17 +84,17 @@ def main ():
     reds, greens, blues = rgbcolormap(rgb)
 
     # Where to write the output?
-    if options.cptfilename=='stdout':
+    if options.cptfilename == 'stdout':
         cptfile = sys.stdout
         cptname = os.path.basename(rgbfilename)
     else:
         if options.cptfilename.endswith('.cpt'):
             outfilename = options.cptfilename
-            cptname = os.path.basename(cptfilename)
+            cptname = os.path.basename(outfilename)
         else:
-            outfilename = options.cptfilename+'.cpt'
-            cptname = os.path.basename(cptfilename)
-        cptfile = file(outfilename, 'wt')
+            outfilename = options.cptfilename + '.cpt'
+            cptname = os.path.basename(outfilename)
+        cptfile = open(outfilename, 'wt')
 
     writecpt(cptfile, cptname, reds, greens, blues)
 
